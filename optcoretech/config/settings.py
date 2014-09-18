@@ -24,6 +24,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 class Common(Configuration):
 
     SECRET_KEY = 'zf)bec5$w8d5juc=4&2%ok2p*dvsb-nqw@dxp_28p34ve)oaqm'
+
+    BROKER_URL = "amqp://sheeshmohsin:sheeshmohsin@localhost:5672/myvhost"
+
+    CELERY_ACCEPT_CONTENT = ['json']
+
+    CELERY_TASK_SERIALIZER = 'json'
+
+    CELERY_RESULT_SERIALIZER = 'json'
+
+    CELERY_TIMEZONE = 'Asia/Calcutta'
+
+    CELERY_BEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
     
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = values.BooleanValue(False)
@@ -50,6 +62,7 @@ class Common(Configuration):
         'crispy_forms', # Form layouts
         'avatar', # for user avatars
         'django_extensions',
+        'djcelery',
     )
 
     LOCAL_APPS = (
@@ -209,4 +222,37 @@ class Local(Common):
     EMAIL_HOST_USER = 'namaste@venuemonk.com'
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
+
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': True,
+        'formatters': {
+            'simple': {
+                'format': '%(levelname)s %(message)s',
+                'datefmt': '%y %b %d, %H:%M:%S',
+                },
+            },
+        'handlers': {
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple'
+                },
+            'celery': {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': 'celery.log',
+                'formatter': 'simple',
+                'maxBytes': 1024 * 1024 * 100,  # 100 mb
+                },
+            },
+        'loggers': {
+            'celery': {
+                'handlers': ['celery', 'console'],
+                'level': 'DEBUG',
+                },  
+            }
+        }
+    from logging.config import dictConfig
+    dictConfig(LOGGING)
 
