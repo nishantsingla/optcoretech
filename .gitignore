@@ -55,3 +55,6 @@ docs/_build/
 # Database
 db.sqlite3
 
+# Celery Database
+celerybeat-schedule.db
+
